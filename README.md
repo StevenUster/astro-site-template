@@ -1,10 +1,4 @@
-# Astro Starter Kit: Basics
-
-```sh
-bun create astro@latest -- --template basics
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+# Astro Starter Kit
 
 ## 🚀 Project Structure
 
