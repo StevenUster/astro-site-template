@@ -1,0 +1,124 @@
+---
+import { SEO } from "astro-seo";
+import "../styles/global.css";
+import "../cookiebanner/styles.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  twitterHandle?: string;
+}
+
+const {
+  title,
+  description,
+  image = "/favicon.svg",
+  twitterHandle,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <SEO
+      title={title}
+      description={description}
+      openGraph={{
+        basic: {
+          title: title,
+          type: "website",
+          image: image,
+        },
+      }}
+      twitter={{
+        creator: twitterHandle,
+      }}
+      extend={{
+        link: [
+          { rel: "icon", href: "/favicon.ico" },
+          { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+        ],
+        meta: [
+          { name: "twitter:image", content: image },
+          { name: "twitter:title", content: title },
+          { name: "twitter:description", content: description },
+        ],
+      }}
+    />
+  </head>
+  <body class="">
+    <slot />
+  </body>
+</html>
+
+<script>
+  declare global {
+    interface Window {
+      gtag: (...args: unknown[]) => void;
+      dataLayer: unknown[];
+      astroConsent?: {
+        get(): {
+          categories: {
+            essential: boolean;
+            analytics: boolean;
+            marketing: boolean;
+          };
+          updatedAt: number;
+          expiresAt: number;
+        } | null;
+        set(c: {
+          essential: boolean;
+          analytics?: boolean;
+          marketing?: boolean;
+        }): void;
+        reset(): void;
+      };
+    }
+  }
+
+  const GA_MEASUREMENT_ID = "G-XXXXXXXXXX";
+
+  let gaLoaded = false;
+
+  function loadGA() {
+    if (gaLoaded) return;
+    gaLoaded = true;
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_MEASUREMENT_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function (...args) {
+      window.dataLayer.push(args);
+    };
+    window.gtag("js", new Date());
+    window.gtag("config", GA_MEASUREMENT_ID);
+  }
+
+  function checkConsent() {
+    if (window.astroConsent?.get()?.categories?.analytics) loadGA();
+  }
+
+  checkConsent();
+
+  if (window.astroConsent) {
+    const originalSet = window.astroConsent.set.bind(window.astroConsent);
+    window.astroConsent.set = (categories) => {
+      originalSet(categories);
+      checkConsent();
+    };
+  }
+</script>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>

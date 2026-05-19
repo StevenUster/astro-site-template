@@ -1,0 +1,59 @@
+---
+interface Props {
+  name: string;
+  role: string;
+  bio: string;
+  avatarUrl?: string;
+}
+
+const { name, role, bio, avatarUrl } = Astro.props;
+---
+
+<div class="bg-white rounded-2xl shadow-md p-6 max-w-sm w-full border border-gray-100">
+  <!-- Badge -->
+  <div class="flex justify-between items-start mb-4">
+    <span class="text-xs font-semibold bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+      🚀 Astro Component
+    </span>
+    <span class="text-xs text-gray-400">static HTML</span>
+  </div>
+
+  <!-- Avatar + Info -->
+  <div class="flex items-center gap-4 mb-4">
+    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white text-xl font-bold shrink-0">
+      {avatarUrl ? (
+        <img src={avatarUrl} alt={name} class="w-full h-full rounded-full object-cover" />
+      ) : (
+        name[0]
+      )}
+    </div>
+    <div>
+      <h3 class="font-bold text-gray-900">{name}</h3>
+      <p class="text-sm text-gray-500">{role}</p>
+    </div>
+  </div>
+
+  <!-- Bio -->
+  <p class="text-sm text-gray-600 mb-5 leading-relaxed">{bio}</p>
+
+  <!-- Actions (static — no JS state) -->
+  <div class="flex gap-2">
+    <button
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 cursor-not-allowed opacity-60"
+      disabled
+    >
+      ♥ Like
+    </button>
+    <button
+      class="flex-1 py-1.5 rounded-lg text-sm font-medium bg-purple-600 text-white cursor-not-allowed opacity-60"
+      disabled
+    >
+      Follow
+    </button>
+  </div>
+
+  <!-- State hint -->
+  <p class="text-xs text-gray-400 mt-3 text-center">
+    No JS shipped — buttons are static, rendered at build time
+  </p>
+</div>

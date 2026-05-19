@@ -1,0 +1,164 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProfileCard from "../components/ProfileCard.astro";
+import ProfileCardReact from "../components/ProfileCard.tsx";
+
+const person = {
+  name: "Alex Rivera",
+  role: "Full-Stack Developer",
+  bio: "Building on the web with Astro and React. Fan of fast sites, good DX, and clean components.",
+};
+---
+
+<Layout title="Running for Jesus" description="Desc">
+  <main class="min-h-screen bg-gray-50 px-4 py-16">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">
+          Astro vs React Components
+        </h1>
+        <p class="text-gray-500 max-w-xl mx-auto">
+          The same <code class="bg-gray-100 px-1 rounded">ProfileCard</code> built
+          two ways. Astro renders static HTML at build time. React hydrates in the
+          browser and adds interactivity.
+        </p>
+      </div>
+
+      <!-- Side-by-side cards -->
+      <div
+        class="flex flex-col sm:flex-row gap-8 justify-center items-start mb-16"
+      >
+        <!-- Astro version -->
+        <div class="w-full sm:w-auto">
+          <p class="text-xs font-mono text-gray-400 mb-2 text-center">
+            ProfileCard.astro
+          </p>
+          <ProfileCard {...person} />
+        </div>
+
+        <!-- React version — client:load hydrates it immediately -->
+        <div class="w-full sm:w-auto">
+          <p class="text-xs font-mono text-gray-400 mb-2 text-center">
+            ProfileCard.tsx + <span class="text-blue-500">client:load</span>
+          </p>
+          <ProfileCardReact client:load {...person} />
+        </div>
+      </div>
+
+      <!-- Explanation -->
+      <div class="grid gap-6 sm:grid-cols-2">
+        <!-- How Astro works -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h2 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <span class="text-purple-600">🚀</span> Astro Component (.astro)
+          </h2>
+          <ul class="text-sm text-gray-600 space-y-2 mb-4">
+            <li>✓ Renders to static HTML at build time</li>
+            <li>✓ Zero JavaScript shipped to the browser</li>
+            <li>
+              ✓ Props passed from the frontmatter (<code
+                class="bg-gray-100 px-1 rounded">---</code
+              > block)
+            </li>
+            <li>
+              ✗ No <code class="bg-gray-100 px-1 rounded">useState</code> — no client-side
+              interactivity
+            </li>
+          </ul>
+          <pre
+            class="bg-gray-900 text-green-300 rounded-lg p-4 text-xs overflow-x-auto leading-relaxed"><code>{`---
+// Frontmatter runs on the server/build
+const { name, role } = Astro.props;
+---
+
+<div>{name}</div>   <!-- plain HTML output -->`}</code></pre>
+        </div>
+
+        <!-- How React works in Astro -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h2 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <span class="text-blue-600">⚛️</span> React Component in Astro
+          </h2>
+          <ul class="text-sm text-gray-600 space-y-2 mb-4">
+            <li>✓ Full React — hooks, state, effects all work</li>
+            <li>
+              ✓ Hydrated in the browser via <code
+                class="bg-gray-100 px-1 rounded">client:</code
+              > directive
+            </li>
+            <li>✓ Props flow in from the parent Astro page</li>
+            <li>
+              ✓ Use <code class="bg-gray-100 px-1 rounded">client:load</code>, <code
+                class="bg-gray-100 px-1 rounded">client:idle</code
+              >, or <code class="bg-gray-100 px-1 rounded">client:visible</code>
+            </li>
+          </ul>
+          <pre
+            class="bg-gray-900 text-blue-300 rounded-lg p-4 text-xs overflow-x-auto leading-relaxed"><code>{`---
+// In any .astro file:
+import Card from './ProfileCard.tsx';
+---
+
+<!-- client:load  → hydrate immediately     -->
+<!-- client:idle  → hydrate when browser idle -->
+<!-- client:visible → hydrate when on screen  -->
+
+<Card client:load name="Alex" />`}</code></pre>
+        </div>
+      </div>
+
+      <!-- client: directives reference -->
+      <div
+        class="mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+      >
+        <h2 class="font-bold text-gray-900 mb-4">
+          client: directive cheat-sheet
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead>
+              <tr class="border-b border-gray-100">
+                <th class="pb-2 pr-6 font-semibold text-gray-700">Directive</th>
+                <th class="pb-2 pr-6 font-semibold text-gray-700"
+                  >When it hydrates</th
+                >
+                <th class="pb-2 font-semibold text-gray-700">Best for</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 divide-y divide-gray-50">
+              <tr class="py-2">
+                <td class="py-2 pr-6 font-mono text-blue-600">client:load</td>
+                <td class="py-2 pr-6">Immediately on page load</td>
+                <td class="py-2">Critical interactive UI (nav, modals)</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-6 font-mono text-blue-600">client:idle</td>
+                <td class="py-2 pr-6">When browser is idle</td>
+                <td class="py-2">Lower-priority widgets</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-6 font-mono text-blue-600">client:visible</td
+                >
+                <td class="py-2 pr-6">When element scrolls into view</td>
+                <td class="py-2">Below-the-fold content</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-6 font-mono text-blue-600"
+                  >client:only="react"</td
+                >
+                <td class="py-2 pr-6">Browser only (skips SSR)</td>
+                <td class="py-2">Components that need browser APIs</td>
+              </tr>
+              <tr>
+                <td class="py-2 pr-6 font-mono text-gray-400">(none)</td>
+                <td class="py-2 pr-6">Never — static HTML only</td>
+                <td class="py-2">Pure display, no interactivity needed</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
